@@ -1,0 +1,56 @@
+package com.cyf.everhavenbe.service.impl;
+
+import com.cyf.everhavenbe.mapper.NavMapper;
+import com.cyf.everhavenbe.model.entity.NavCategory;
+import com.cyf.everhavenbe.model.entity.NavItem;
+import com.cyf.everhavenbe.model.vo.NavCategoryVO;
+import com.cyf.everhavenbe.model.vo.NavItemVO;
+import com.cyf.everhavenbe.service.NavService;
+import org.springframework.stereotype.Service;
+import org.springframework.beans.BeanUtils;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.Collections;
+
+@Service
+public class NavServiceImpl implements NavService {
+
+    private final NavMapper navMapper;
+
+    public NavServiceImpl(NavMapper navMapper) {
+        this.navMapper = navMapper;
+    }
+
+    @Override
+    public List<NavCategoryVO> getNavTree() {
+        List<NavCategory> categories = navMapper.findAllCategories();
+        List<NavItem> items = navMapper.findAllItems();
+
+        // Group items by categoryId
+        Map<Long, List<NavItem>> itemsMap = items.stream()
+            .collect(Collectors.groupingBy(NavItem::getCategoryId));
+
+        return categories.stream().map(cat -> {
+            NavCategoryVO vo = new NavCategoryVO();
+            vo.setId(cat.getId());
+            vo.setName(cat.getName());
+            
+            List<NavItem> catItems = itemsMap.getOrDefault(cat.getId(), Collections.emptyList());
+            List<NavItemVO> itemVOs = catItems.stream()
+                .map(this::convertToItemVO)
+                .collect(Collectors.toList());
+            
+            vo.setContent(itemVOs);
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    private NavItemVO convertToItemVO(NavItem item) {
+        NavItemVO vo = new NavItemVO();
+        BeanUtils.copyProperties(item, vo);
+        return vo;
+    }
+}
+
