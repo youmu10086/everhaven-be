@@ -1,12 +1,13 @@
-CREATE TABLE IF NOT EXISTS carousel_slides (
+DROP TABLE IF EXISTS carousel_slides;
+CREATE TABLE carousel_slides (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     image VARCHAR(500) NOT NULL,
-    image_dark VARCHAR(500) NULL,
+    image_dark VARCHAR(500),
     type VARCHAR(50) DEFAULT 'hero',
     title VARCHAR(200) NOT NULL,
     subtitle VARCHAR(500),
-    `link` VARCHAR(500),
-    `label` VARCHAR(100),
+    link VARCHAR(500),
+    label VARCHAR(100),
     description VARCHAR(1000),
     sort_order INT DEFAULT 0,
     status BOOLEAN DEFAULT TRUE,
@@ -14,8 +15,33 @@ CREATE TABLE IF NOT EXISTS carousel_slides (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-ALTER TABLE carousel_slides ADD COLUMN IF NOT EXISTS image_dark VARCHAR(500) NULL AFTER image;
-ALTER TABLE carousel_slides ADD COLUMN IF NOT EXISTS `link` VARCHAR(500) NULL AFTER subtitle;
-ALTER TABLE carousel_slides ADD COLUMN IF NOT EXISTS `label` VARCHAR(100) NULL AFTER `link`;
-ALTER TABLE carousel_slides ADD COLUMN IF NOT EXISTS description VARCHAR(1000) NULL AFTER `label`;
+DROP TABLE IF EXISTS nav_items;
+DROP TABLE IF EXISTS nav_categories;
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    nickname VARCHAR(100),
+    email VARCHAR(100) NOT NULL UNIQUE,
+    user_pic VARCHAR(500),
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE nav_categories (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE nav_items (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    category_id BIGINT NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    description VARCHAR(500),
+    link VARCHAR(500),
+    image VARCHAR(500),
+    FOREIGN KEY (category_id) REFERENCES nav_categories(id) ON DELETE CASCADE
+);
 

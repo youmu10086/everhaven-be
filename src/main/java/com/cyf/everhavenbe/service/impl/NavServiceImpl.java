@@ -5,6 +5,7 @@ import com.cyf.everhavenbe.model.entity.NavCategory;
 import com.cyf.everhavenbe.model.entity.NavItem;
 import com.cyf.everhavenbe.model.vo.NavCategoryVO;
 import com.cyf.everhavenbe.model.vo.NavItemVO;
+import com.cyf.everhavenbe.service.ImageStorageService;
 import com.cyf.everhavenbe.service.NavService;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.BeanUtils;
@@ -18,9 +19,11 @@ import java.util.Collections;
 public class NavServiceImpl implements NavService {
 
     private final NavMapper navMapper;
+    private final ImageStorageService imageStorageService;
 
-    public NavServiceImpl(NavMapper navMapper) {
+    public NavServiceImpl(NavMapper navMapper, ImageStorageService imageStorageService) {
         this.navMapper = navMapper;
+        this.imageStorageService = imageStorageService;
     }
 
     @Override
@@ -50,6 +53,7 @@ public class NavServiceImpl implements NavService {
     private NavItemVO convertToItemVO(NavItem item) {
         NavItemVO vo = new NavItemVO();
         BeanUtils.copyProperties(item, vo);
+        vo.setImage(imageStorageService.localize(vo.getImage(), "nav"));
         return vo;
     }
 }

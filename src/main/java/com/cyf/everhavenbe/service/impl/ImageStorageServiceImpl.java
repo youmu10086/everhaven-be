@@ -21,6 +21,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -29,6 +30,7 @@ public class ImageStorageServiceImpl implements ImageStorageService {
     private static final Logger log = LoggerFactory.getLogger(ImageStorageServiceImpl.class);
 
     private final ImageStorageProperties properties;
+    private final Set<String> missingUrlLogged = ConcurrentHashMap.newKeySet();
     private final Map<String, String> urlCache = new ConcurrentHashMap<>();
 
     public ImageStorageServiceImpl(ImageStorageProperties properties) {
@@ -65,25 +67,33 @@ public class ImageStorageServiceImpl implements ImageStorageService {
             }
 
             HttpURLConnection connection = openConnection(sourceUrl);
-            int responseCode = connection.getResponseCode();
-            if (responseCode < 200 || responseCode >= 300) {
-                log.warn("Image download failed, status={}, url={}", responseCode, sourceUrl);
-                return sourceUrl;
-            }
+            try {
+                int responseCode = connection.getResponseCode();
+                if (responseCode >= 200 && responseCode < 300) {
+                    String extension = guessExtension(connection.getContentType(), sourceUrl);
+                    Path tempFile = Files.createTempFile(targetDir, hash, ".tmp");
+                    Path targetFile = targetDir.resolve(hash + extension);
 
-            String extension = guessExtension(connection.getContentType(), sourceUrl);
-            Path tempFile = Files.createTempFile(targetDir, hash, ".tmp");
-            Path targetFile = targetDir.resolve(hash + extension);
-
-            try (InputStream inputStream = connection.getInputStream()) {
-                Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
-                Files.move(tempFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
+                    try (InputStream inputStream = connection.getInputStream()) {
+                        Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+                        Files.move(tempFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
+                        return buildPublicUrl(folder, targetFile.getFileName().toString());
+                    } finally {
+                        Files.deleteIfExists(tempFile);
+                    }
+                } else {
+                    if (responseCode == 404 || responseCode == 410) {
+                        if (missingUrlLogged.add(sourceUrl)) {
+                            log.info("Image source not found, keep original URL: {}", sourceUrl);
+                        }
+                    } else {
+                        log.warn("Image download failed, status={}, url={}", responseCode, sourceUrl);
+                    }
+                    return sourceUrl;
+                }
             } finally {
-                Files.deleteIfExists(tempFile);
                 connection.disconnect();
             }
-
-            return buildPublicUrl(folder, targetFile.getFileName().toString());
         } catch (Exception ex) {
             log.warn("Image localization failed, url={}", sourceUrl, ex);
             return sourceUrl;
@@ -118,7 +128,18 @@ public class ImageStorageServiceImpl implements ImageStorageService {
 
     private String buildPublicUrl(String folder, String fileName) {
         String prefix = normalizePublicPrefix(properties.getPublicPrefix());
-        return prefix + "/" + folder + "/" + fileName;
+        String relativeUrl = prefix + "/" + folder + "/" + fileName;
+
+        String baseUrl = properties.getPublicBaseUrl();
+        if (!StringUtils.hasText(baseUrl)) {
+            return relativeUrl;
+        }
+
+        String normalizedBase = baseUrl.trim();
+        if (normalizedBase.endsWith("/")) {
+            normalizedBase = normalizedBase.substring(0, normalizedBase.length() - 1);
+        }
+        return normalizedBase + relativeUrl;
     }
 
     private String normalizePublicPrefix(String prefix) {

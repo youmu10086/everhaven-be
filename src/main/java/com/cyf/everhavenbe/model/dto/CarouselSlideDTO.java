@@ -1,4 +1,4 @@
-package com.cyf.everhavenbe.dto;
+package com.cyf.everhavenbe.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

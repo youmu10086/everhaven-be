@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: everhaven-be
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/everhavenv1db
+    username: root
+    password: 114514
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  jpa:
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        connection:
+          autocommit: false
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+
+app:
+  image:
+    local-dir: uploads/images
+    public-prefix: /media
+    sync-on-startup: true
+    public-base-url: http://localhost:8080
+  ai:
+    api-key: "ms-7a4f6a60-5ea7-4a11-844d-627cac18a983"
+    base-url: "https://api-inference.modelscope.cn/v1"
+    model: "Qwen/Qwen3.5-27B"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+        exclude: env,beans
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.cyf.everhavenbe: DEBUG
+    org.springframework.web: DEBUG
+
+#debug: true

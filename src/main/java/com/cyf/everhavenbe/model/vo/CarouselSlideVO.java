@@ -1,4 +1,4 @@
-package com.cyf.everhavenbe.vo;
+package com.cyf.everhavenbe.model.vo;
 
 import lombok.Data;
 

@@ -26,28 +26,41 @@ This document defines the "Skill" (context and instructions) for AI assistants t
 - `model.vo`: View Objects for API responses (e.g., `NavCategoryVO`, `NavItemVO`).
 - `model.dto`: Data Transfer Objects for API requests.
 - `common`: Common utility classes like `Result`.
+- `exception`: Global exception handling logic.
 
 ### Coding Standards
 - **Unified Response**: Every API should return `com.cyf.everhavenbe.common.Result<T>`.
+    - `Result.success(data)` / `Result.success()`
+    - `Result.error(message)` / `Result.error(code, message)`
+- **Swagger/OpenAPI (Required for APIFox)**: 
+    - Every Controller class **must** have a `@Tag` annotation with a name and description (e.g., `@Tag(name = "User Management", description = "用户管理相关操作")`).
+    - Every public API method **must** have an `@Operation(summary = "...", description = "...")` annotation.
+    - **Note**: The `description` and `summary` fields **must** be in **Chinese** to ensure better readability in APIFox.
 - **Lombok**: Use `@Data`, `@AllArgsConstructor`, `@NoArgsConstructor`, and `@Builder` to reduce boilerplate.
 - **Dependency Injection**: Prefer constructor injection over field injection (`@Autowired`).
-- **Swagger**: Use `@Tag` and `@Operation` for documenting controllers and endpoints.
+- **Validation**: Use `jakarta.validation` annotations (e.g., `@NotBlank`, `@Pattern`). The `GlobalExceptionHandler` handles `ConstraintViolationException` and `HandlerMethodValidationException`.
+- **Security**: 
+    - Use `RSAUtil` for decrypting sensitive information.
+    - Use `JwtUtil` for token generation and verification.
+    - Token claims should be mapped to the `claims` key (Map<String, Object>).
 
-### File Handling
-- Local image storage is used (paths like `/uploads/images/...`).
-- Controllers handles image sync and carousel slide management.
-
-## AI Instructions (The "Skill")
+### AI Instructions (The "Skill")
 When generating code or providing suggestions for this project, the AI should:
 
-1.  **Strict Layering**: Ensure new logic is placed in the correct layer (Entity -> Mapper -> Service -> Controller).
-2.  **DTO/VO Usage**: Never return Entities directly to the frontend. Always map them to VO classes.
-3.  **Result Wrapper**: Wrap all controller return types in `Result.success(data)` or `Result.error(message)`.
-4.  **Java 17+ Features**: Use modern Java features like `Optional`, Streams, and records where appropriate.
-5.  **Logging**: Use `@Slf4j` for logging within services and controllers.
-6.  **Exception Handling**: Use the project's custom exception handling mechanism (look at `exception/` package) instead of returning raw error codes.
-7.  **Resource Management**: Ensure proper path handling for file uploads using relative paths and configurable storage locations.
+1.  **Strict Layering and Model Creation**: 
+    - When adding or modifying a business model, ensure **all three layers** are created:
+        - **Entity**: Located in `model.entity`, representing the database table structure. Use JPA/MyBatis annotations as appropriate.
+        - **DTO (Data Transfer Object)**: Located in `model.dto`, used for receiving request data from the frontend (e.g., in `POST` or `PUT` methods). Use validation annotations if necessary.
+        - **VO (View Object)**: Located in `model.vo`, used for returning data to the frontend. Ensure internal fields (like image URLs) are properly processed or localized before returning.
+2.  **DTO/VO Usage**: Never return Entities directly to the frontend. Always map them to VO classes located in `model.vo`.
+3.  **Result Wrapper**: Wrap all controller return types in `Result<T>`.
+4.  **Logging**: Use `@Slf4j` (or `LoggerFactory.getLogger` if consistent with existing files) for logging.
+5.  **Validation**: Apply validation on DTO fields and handle them via the global handler.
+6.  **Naming Conventions**:
+    - Table columns map to camelCase in Java.
+    - Interfaces in `service` package, implementations in `service.impl`.
+    - Mapper files should be in the `mapper` package.
+7.  **Modern Java**: Use Java 17+ features like `List.of()`, `Optional`, and Streams.
 
 ---
 *Created on 2026-03-31 to optimize AI outputs for Everhaven.*
-

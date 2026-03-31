@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/home/nav_items")
-@Tag(name = "Navigation Management", description = "Operations pertaining to navigation items")
+@Tag(name = "Navigation Management", description = "导航栏菜单管理操作")
 public class NavController {
 
     private final NavService navService;
@@ -23,9 +23,8 @@ public class NavController {
     }
 
     @GetMapping
-    @Operation(summary = "Get navigation items", description = "Retrieves the navigation menu structure")
+    @Operation(summary = "获取导航项", description = "获取系统首页的导航菜单树形结构")
     public Result<List<NavCategoryVO>> getNavItems() {
         return Result.success(navService.getNavTree());
     }
 }
-
