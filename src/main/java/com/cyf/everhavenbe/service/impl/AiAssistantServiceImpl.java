@@ -46,8 +46,8 @@ public class AiAssistantServiceImpl implements AiAssistantService {
         messages.add(Map.of("role", "system", "content", systemPrompt));
 
         // 2. 消息历史处理 - 确保 role 合法
-        if (request.getMessages() != null && !request.getMessages().isEmpty()) {
-            for (Map<String, String> msg : request.getMessages()) {
+        if (request.getHistory() != null && !request.getHistory().isEmpty()) {
+            for (Map<String, String> msg : request.getHistory()) {
                 String role = msg.get("role");
                 String content = msg.get("content");
                 // OpenAI/ModelScope 兼容性：只发送 user 和 assistant，避免非法 role 导致 400
