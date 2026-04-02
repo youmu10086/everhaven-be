@@ -25,6 +25,9 @@ public class User {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
+    @Column(name = "role", length = 20)
+    private String role = "USER"; // 默认为普通用户
+
     @Column(name = "user_pic", length = 500)
     private String userPic;
 

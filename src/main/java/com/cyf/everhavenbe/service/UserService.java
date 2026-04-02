@@ -17,4 +17,10 @@ public interface UserService {
 
     // 刷新 Token
     TokenVO refreshToken(String refreshToken);
+
+    // 更新用户信息
+    void update(Long id, String nickname, String email, String userPic);
+
+    // 根据ID查询用户
+    User findById(Long id);
 }

@@ -84,4 +84,19 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("无效的刷新令牌");
         }
     }
+
+    @Override
+    public User findById(Long id) {
+        return userMapper.findById(id);
+    }
+
+    @Override
+    public void update(Long id, String nickname, String email, String userPic) {
+        User user = new User();
+        user.setId(id);
+        user.setNickname(nickname);
+        user.setEmail(email);
+        user.setUserPic(userPic);
+        userMapper.update(user);
+    }
 }

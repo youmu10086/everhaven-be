@@ -58,3 +58,16 @@ INSERT INTO nav_items (category_id, title, description, link, image) VALUES
 (4, '清洁用品', '高效洁净，轻松打造舒适居家环境', '/products/cleaning', 'https://images.unsplash.com/photo-1581578731117-926d8aa3702b?auto=format&fit=crop&w=800&q=80'),
 (4, '装饰摆件', '艺术点缀，彰显主人独特的生活品味', '/products/decoration', 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80'),
 (4, '床上用品', '亲肤好眠，每晚都能拥有的甜美梦境', '/products/bedding', 'https://images.unsplash.com/photo-1505693416388-b0346efee535?auto=format&fit=crop&w=800&q=80');
+
+-- 初始用户与角色数据 (密码默认为: 123456 的 MD5 值)
+INSERT INTO users (id, username, password, nickname, email, role, user_pic) VALUES
+(1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', '系统管理员', 'admin@everhaven.com', 'ADMIN', 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin'),
+(2, 'host_test', 'e10adc3949ba59abbe56e057f20f883e', '优质房东-老王', 'host@everhaven.com', 'HOST', 'https://api.dicebear.com/7.x/avataaars/svg?seed=host'),
+(3, 'user_test', 'e10adc3949ba59abbe56e057f20f883e', '极简旅行者', 'user@everhaven.com', 'USER', 'https://api.dicebear.com/7.x/avataaars/svg?seed=user')
+ON DUPLICATE KEY UPDATE 
+    password = VALUES(password),
+    nickname = VALUES(nickname),
+    email = VALUES(email),
+    role = VALUES(role),
+    user_pic = VALUES(user_pic);
+
