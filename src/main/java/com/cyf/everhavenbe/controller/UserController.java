@@ -105,7 +105,7 @@ public class UserController {
     
     @GetMapping("/public-key")
     @Operation(summary = "获取公钥", description = "获取用于前端密码加密的 RSA 公钥")
-    public Result<String> getPublicKey() {
-        return Result.success(RSAUtil.getPublicKey());
+    public String getPublicKey() {
+        return RSAUtil.getPublicKey();
     }
 }

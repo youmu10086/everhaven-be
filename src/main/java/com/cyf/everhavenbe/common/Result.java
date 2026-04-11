@@ -39,7 +39,7 @@ public class Result<T> {
      */
     public static <T> Result<T> success(T data) {
         Result<T> result = new Result<>();
-        result.setCode(200);
+        result.setCode(0);
         result.setMessage("操作成功");
         result.setData(data);
         return result;
@@ -50,7 +50,7 @@ public class Result<T> {
      */
     public static <T> Result<T> success(String message, T data) {
         Result<T> result = new Result<>();
-        result.setCode(200);
+        result.setCode(0);
         result.setMessage(message);
         result.setData(data);
         return result;

@@ -54,5 +54,12 @@ logging:
   level:
     com.cyf.everhavenbe: DEBUG
     org.springframework.web: DEBUG
+    # 显示 SQL 语句 (Hibernate)
+    org.hibernate.SQL: DEBUG
+    # 显示 SQL 绑定参数 (Hibernate)
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    # 显示 MyBatis Plus 相关执行日志
+    com.cyf.everhavenbe.mapper: TRACE
+    com.baomidou.mybatisplus: DEBUG
 
 #debug: true

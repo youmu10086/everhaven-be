@@ -1,6 +1,7 @@
 package com.cyf.everhavenbe.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -18,7 +19,7 @@ public class StaticResourceConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
@@ -27,7 +28,7 @@ public class StaticResourceConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         String publicPrefix = normalizePublicPrefix(imageStorageProperties.getPublicPrefix());
         Path imageRoot = Paths.get(imageStorageProperties.getLocalDir()).toAbsolutePath().normalize();
         String fileLocation = imageRoot.toUri().toString();

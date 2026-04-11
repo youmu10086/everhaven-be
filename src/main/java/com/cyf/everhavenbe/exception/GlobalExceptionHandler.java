@@ -76,9 +76,8 @@ public class GlobalExceptionHandler {
     public Result<Void> handleException(Exception e) {
         logger.error("系统异常：", e);
         String message = e.getMessage();
-        if (!StringUtils.hasLength(message)) {
-            message = "操作失败";
-        }
-        return Result.error(message);
+        // 增加更详细的错误原因输出到前端，方便调试
+        String detailMessage = e.getClass().getSimpleName() + ": " + (StringUtils.hasLength(message) ? message : "未捕获的系统异常");
+        return Result.error(detailMessage);
     }
 }

@@ -50,6 +50,38 @@ public class NavServiceImpl implements NavService {
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public void addCategory(NavCategory category) {
+        navMapper.insertCategory(category);
+    }
+
+    @Override
+    public void updateCategory(NavCategory category) {
+        navMapper.updateCategory(category);
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional
+    public void deleteCategory(Long id) {
+        navMapper.deleteItemsByCategoryId(id);
+        navMapper.deleteCategory(id);
+    }
+
+    @Override
+    public void addItem(NavItem item) {
+        navMapper.insertItem(item);
+    }
+
+    @Override
+    public void updateItem(NavItem item) {
+        navMapper.updateItem(item);
+    }
+
+    @Override
+    public void deleteItem(Long id) {
+        navMapper.deleteItem(id);
+    }
+
     private NavItemVO convertToItemVO(NavItem item) {
         NavItemVO vo = new NavItemVO();
         BeanUtils.copyProperties(item, vo);
